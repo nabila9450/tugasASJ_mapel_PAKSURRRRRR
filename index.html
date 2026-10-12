@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FBF8F1">
+    <title>Praktikum ASJ - VirtualBox &amp; Debian</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome (ikon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP & ScrollTrigger (animasi) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Lenis (smooth scroll) -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+
+    <!-- Three.js (BG model 3D) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="loader-text" id="loader-word">PRAKTIKUM ASJ</div>
+        <div class="loader-line">
+            <div id="loader-bar"></div>
+        </div>
+    </div>
+
+    <!-- Progress scroll -->
+    <div id="scroll-progress"></div>
+
+    <!-- Definisi bentuk sayap (dipakai berulang oleh sayap berjatuhan). Tidak terlihat di halaman. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#FFFFFF" />
+                <stop offset=".55" stop-color="#F7EBC4" />
+                <stop offset="1" stop-color="#E3C46E" />
+            </linearGradient>
+            <symbol id="wing" viewBox="0 0 140 90">
+                <g fill="url(#wingGrad)" stroke="rgba(138,106,31,.55)" stroke-width="1" stroke-linejoin="round">
+                    <path transform="translate(12 78) rotate(-6)" d="M0 0 C22 -9 80 -11 118 0 C80 9 22 9 0 0Z" />
+                    <path transform="translate(12 78) rotate(-20)" d="M0 0 C20 -9 72 -11 106 0 C72 9 20 9 0 0Z" />
+                    <path transform="translate(12 78) rotate(-34)" d="M0 0 C18 -8 62 -10 92 0 C62 8 18 8 0 0Z" />
+                    <path transform="translate(12 78) rotate(-48)" d="M0 0 C16 -8 52 -9 76 0 C52 8 16 8 0 0Z" />
+                    <path transform="translate(12 78) rotate(-62)" d="M0 0 C14 -7 40 -8 58 0 C40 7 14 7 0 0Z" />
+                    <path transform="translate(12 78) rotate(-76)" d="M0 0 C10 -6 28 -7 40 0 C28 6 10 6 0 0Z" />
+                </g>
+            </symbol>
+        </defs>
+    </svg>
+
+    <!-- Latar belakang -->
+    <div class="bg-fx" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="grid-fx"></div>
+        <canvas id="bg3d"></canvas>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header" id="site-header">
+        <div class="wrap header-inner">
+            <a href="#kelompok" class="brand"><i class="fa-solid fa-server"></i><span>PRAKTIKUM ASJ</span></a>
+            <nav class="nav" id="nav">
+                <a href="#kelompok">Kelompok</a>
+                <a href="#virtualbox">VirtualBox</a>
+                <a href="#galeri">Galeri</a>
+                <a href="#install">Install</a>
+                <a href="#perintah">Perintah</a>
+                <a href="#kesimpulan">Kesimpulan</a>
+            </nav>
+            <button class="menu-btn" id="menu-btn" aria-label="Buka menu"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ============ KELOMPOK (HERO) ============ -->
+        <section id="kelompok" class="hero wrap">
+            <!-- ===== VIDEO BACKGROUND HERO =====
+                 GANTI VIDEO:-->
+            <div class="hero-bg" aria-hidden="true">
+                <video id="hero.mp4" autoplay muted loop playsinline preload="metadata" poster="hero-poster.jpg"
+                    disablepictureinpicture tabindex="-1">
+                    <source src="Video Project.mp4" type="video/webm"> <!--video WebM-->
+                    <source src="hero.mp4" type="video/mp4"> <!--video MP4-->
+                </video>
+                <div class="hero-veil"></div>
+            </div>
+            <div class="hero-text">
+                <p class="eyebrow">Administrasi Sistem Jaringan</p>
+                <h1 class="title">VirtualBox <span class="amp">&amp;</span> Debian</h1>
+                <p class="lead">Pengertian VirtualBox, cara install VirtualBox dan Debian, serta fungsi perintah
+                    terminal saat membuat direktori.</p>
+                <a class="btn" href="#virtualbox">Mulai Materi <i class="fa-solid fa-arrow-down"></i></a>
+            </div>
+
+            <!-- Karakter 2D + kotak nama kelompok -->
+            <div class="stage" id="stage">
+                <img class="char-img" src="Gemini_Generated_Image_3gqkhh3gqkhh3gqk-removebg-preview.png" alt="Karakter 2D sedang mengangkat kotak nama kelompok">
+                <svg class="char" viewBox="0 0 560 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="gHoodie" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#F1DE9E" />
+                            <stop offset="1" stop-color="#C9A24A" />
+                        </linearGradient>
+                        <linearGradient id="gBeam" gradientUnits="userSpaceOnUse" x1="0" y1="278" x2="0" y2="198">
+                            <stop offset="0" stop-color="#A67C00" stop-opacity=".9" />
+                            <stop offset="1" stop-color="#A67C00" stop-opacity="0" />
+                        </linearGradient>
+                        <radialGradient id="gGlow">
+                            <stop offset="0" stop-color="#D9B450" stop-opacity=".6" />
+                            <stop offset="1" stop-color="#D9B450" stop-opacity="0" />
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Sinar dari telapak tangan ke kotak (posisi x/y disesuaikan dengan tangan di karakter.png) -->
+                    <ellipse class="glow" cx="310" cy="280" rx="46" ry="14" fill="url(#gGlow)" />
+                    <path class="beam" d="M310 278 V200" stroke="url(#gBeam)" stroke-width="4" stroke-linecap="round"
+                        stroke-dasharray="3 9" fill="none" />
+                </svg>
+
+                <span class="spark s1">✦</span>
+                <span class="spark s2">✦</span>
+                <span class="spark s3">✦</span>
+                <span class="spark s4">✦</span>
+
+                <!-- Kotak nama kelompok interaktif: miring mengikuti mouse, geser otomatis, klik inisial untuk lompat -->
+                <div class="name-card" id="name-card">
+                    <div class="nc-glare"></div>
+                    <div class="nc-tilt" id="nc-tilt">
+                        <div class="nc-top">
+                            <span class="nc-label">KELOMPOK 1</span>
+                            <span class="nc-count" id="nc-count">1 / 5</span>
+                            <button class="nc-play" id="nc-play" aria-label="Jeda geser otomatis"><i
+                                    class="fa-solid fa-pause"></i></button>
+                        </div>
+                        <div class="nc-viewport" id="nc-viewport" tabindex="0"
+                            aria-label="Daftar anggota kelompok, geser untuk melihat anggota lain">
+                            <div class="nc-track" id="nc-track">
+                                <!-- GANTI NAMA, INISIAL, DAN PERAN DI SINI (5 anggota) -->
+                                <div class="nc-slide">
+                                    <div class="nc-avatar"><span>1</span></div>
+                                    <div class="nc-info"><span class="nc-no">Anggota 1</span>
+                                        <h3>Nabila Oktaviani</h3><span class="nc-role">scroll layar</span>
+                                    </div>
+                                </div>
+                                <div class="nc-slide">
+                                    <div class="nc-avatar"><span>2</span></div>
+                                    <div class="nc-info"><span class="nc-no">Anggota 2</span>
+                                        <h3>Natasya namira putri</h3><span class="nc-role">pemateri/pemubuka</span>
+                                    </div>
+                                </div>
+                                <div class="nc-slide">
+                                    <div class="nc-avatar"><span>3</span></div>
+                                    <div class="nc-info"><span class="nc-no">Anggota 3</span>
+                                        <h3>Alena indah permata</h3><span class="nc-role">Pemateri</span>
+                                    </div>
+                                </div>
+                                <div class="nc-slide">
+                                    <div class="nc-avatar"><span>4</span></div>
+                                    <div class="nc-info"><span class="nc-no">Anggota 4</span>
+                                        <h3>Miska widya ningsih</h3><span class="nc-role">Penutup/pemateri</span>
+                                    </div>
+                                </div>
+                                <div class="nc-slide">
+                                    <div class="nc-avatar"><span>5</span></div>
+                                    <div class="nc-info"><span class="nc-no">Anggota 5</span>
+                                        <h3>Elinda sari</h3><span class="nc-role">pemateri</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nc-progress"><i id="nc-bar"></i></div>
+                        <div class="nc-bottom">
+                            <button class="nc-arrow" id="nc-prev" aria-label="Sebelumnya">&#8249;</button>
+                            <div class="nc-dots" id="nc-dots"></div>
+                            <button class="nc-arrow" id="nc-next" aria-label="Berikutnya">&#8250;</button>
+                        </div>
+                    </div>
+                    <div class="nc-burst" id="nc-burst"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ PENGERTIAN VIRTUALBOX ============ -->
+        <section id="virtualbox" class="section wrap">
+            <p class="eyebrow reveal">Materi 1</p>
+            <h2 class="h2 reveal">Pengertian VirtualBox</h2>
+            <div class="bk-wrap reveal" id="vb-book">
+                <div class="bk" id="bk" data-step="0">
+                    <div class="bk-book">
+                        <!-- Sampul belakang (penutup), tampil setelah halaman terakhir -->
+                        <div class="bk-end">
+                            <i class="fa-solid fa-cube"></i>
+                            <h3>Sekian</h3>
+                            <p>Pengertian VirtualBox</p>
+                            <button type="button" class="bk-again" id="bk-again"><i class="fa-solid fa-rotate-left"></i>
+                                Baca lagi</button>
+                        </div>
+
+                        <!-- Halaman 2: ciri-ciri -->
+                        <div class="bk-leaf">
+                            <div class="bk-face bk-front bk-page">
+                                <h3 class="bk-h">Ciri-ciri VirtualBox</h3>
+                                <div class="chips">
+                                    <span class="chip"><i class="fa-solid fa-microchip"></i> Hypervisor Type 2</span>
+                                    <span class="chip"><i class="fa-solid fa-building"></i> Dikembangkan Oracle</span>
+                                    <span class="chip"><i class="fa-solid fa-gift"></i> Gratis</span>
+                                    <span class="chip"><i class="fa-solid fa-code-branch"></i> Open-source</span>
+                                    <span class="chip"><i class="fa-solid fa-layer-group"></i> Banyak OS dalam 1
+                                        komputer</span>
+                                    <span class="chip"><i class="fa-solid fa-shield-halved"></i> OS utama tidak
+                                        terganggu</span>
+                                </div>
+                            </div>
+                            <div class="bk-face bk-back"></div>
+                        </div>
+
+                        <!-- Halaman 1: pengertian -->
+                        <div class="bk-leaf">
+                            <div class="bk-face bk-front bk-page">
+                                <div class="vb-icon"><i class="fa-solid fa-cube"></i></div>
+                                <p class="big-text">
+                                    <strong>VirtualBox</strong> adalah perangkat lunak virtualisasi (<b>Hypervisor Type
+                                        2</b>) berlisensi open-source yang dikembangkan oleh Oracle. Software ini
+                                    memungkinkan sebuah komputer fisik (<b>Host OS</b>) menjalankan satu atau beberapa
+                                    sistem operasi virtual (<b>Guest OS</b>), seperti Linux Debian, Windows, atau macOS,
+                                    secara bersamaan dalam lingkungan yang terisolasi tanpa memengaruhi sistem operasi
+                                    utama.
+                                </p>
+                            </div>
+                            <div class="bk-face bk-back"></div>
+                        </div>
+
+                        <!-- Sampul depan. GANTI FOTO: ubah nama file di src="foto-sampul.jpg" (foto otomatis dibulatkan) -->
+                        <div class="bk-leaf">
+                            <div class="bk-face bk-front bk-cover">
+                                <div class="bk-photo"><i class="fa-solid fa-cube"></i><img src="foto-sampul.jpg"
+                                        alt="Foto sampul" onerror="this.remove()"></div>
+                                <h3>Pengertian VirtualBox</h3>
+                                <span class="bk-open">Klik untuk membuka</span>
+                            </div>
+                            <div class="bk-face bk-back"></div>
+                        </div>
+                    </div>
+                    <div class="bk-ctl">
+                        <button type="button" id="bk-prev" aria-label="Halaman sebelumnya">&#8592;</button>
+                        <div class="bk-dots" aria-hidden="true"><i class="bk-dot"></i><i class="bk-dot"></i><i
+                                class="bk-dot"></i><i class="bk-dot"></i></div>
+                        <button type="button" id="bk-next" aria-label="Halaman berikutnya">&#8594;</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ GALERI FOTO (sebelum tutorial install) ============ -->
+        <section id="galeri" class="section wrap">
+            <p class="eyebrow reveal">Dokumentasi</p>
+            <h2 class="h2 reveal">Galeri Foto Praktikum</h2>
+            <h3 class="h2 reveal">cuma dokuemntasi agar tutotial jelas ada gambarnya</h3>
+
+            <div class="gal reveal" id="gal">
+                <div class="gal-slide" id="gal-slide">
+                    <!-- GANTI FOTO: -->
+                    <div class="gal-item"
+                        style="background-image: url('WhatsApp Image 2026-10-11 at 23.02.49.jpeg'), linear-gradient(135deg, #F3E3B0, #FFFDF6);"
+                        data-img="WhatsApp Image 2026-10-11 at 23.02.49.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Persiapan</div>
+                            <div class="gal-des">langkah langkah foto praktikum</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Masukan VM name dan tentukan lokasi penyimpanan</li>
+                            <li>pada kolom ISO Image, pilih berkas ISO installer</li>
+                            <li>pilih type linux dan version debian(64-bit).</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto 2.jpeg'), linear-gradient(135deg, #EBD9A0, #FBF3DC);"
+                        data-img="foto 2.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">alokasi hardware</div>
+                            <div class="gal-des">menentukan kapasitas memori RAM dan jumlah prosesor VM</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Geser slider Base Memory untuk menentukan ukuran RAM contoh: 1658 MB</li>
+                            <li>Atur Number of CPUs ke 1 CPU (atau sesuai kebutuhan host).</li>
+                            <li>Biarkan opsi Use EFI tidak tercentang, lalu klik tombol Finish/Next.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('WhatsApp Image 2026-10-11 at 23.02.50.jpeg'), linear-gradient(135deg, #E8D08A, #FFFCF0);"
+                        data-img="WhatsApp Image 2026-10-11 at 23.02.50.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Konfigurasi Jaringan</div>
+                            <div class="gal-des">Pengaturan adapter jaringan pada menu Settings VirtualBox agar VM
+                                terhubung ke adapter host.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Klik New di VirtualBox, lalu isi nama mesin (contoh: Debian-ASJ).</li>
+                            <li>Buka menu Settings > Network pada VM, centang opsi Enable Network Adapter.</li>
+                            <li>Pilih Name adapter VirtualBox Host-Only Ethernet Adapter, lalu klik OK.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto4.jpeg'), linear-gradient(135deg, #F0DFAA, #FAF2DA);"
+                        data-img="foto4.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Booting Installer</div>
+                            <div class="gal-des">mulai proses booting dari ISO</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Jalankan mesin virtual (klik Start) hingga muncul menu Debian GNU/Linux installer</li>
+                            <li>Gunakan tombol panah keyboard untuk menyorot opsi Install (text mode).</li>
+                            <li>Tekan tombol Enter untuk memulai proses instalasi berbasis teks.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto7.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto7.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Pengaturan Hostname</div>
+                            <div class="gal-des">Penamaan mesin dalam jaringan lokal.
+                                Kotak 1:</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pada tampilan Configure the network, isi kolom Hostname (contoh: debian).</li>
+                            <li>Gunakan tombol Tab untuk berpindah dan menyorot opsi .</li>
+                            <li>Tekan Enter untuk menyetujui nama identitas mesin.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto6.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto6.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">06. Pembuatan Pengguna</div>
+                            <div class="gal-des">Pembuatan akun pengguna baru (non-root) untuk penggunaan harian.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pada menu Set up users and passwords, isi Full name for the new user (misal: smkfasent)
+                            </li>
+                            <li>DTekan Tab lalu pilih .</li>
+                            <li>Tekan Enter untuk melanjutkan ke pembuat nama akun dan password.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto5.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto5.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Pengaturan Zona Waktu</div>
+                            <div class="gal-des">Penentuan wilayah waktu sistem operasi Debian.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pada menu Configure the clock, pilih wilayah zona waktu yang sesuai (misal: Eastern).
+                            </li>
+                            <li>Gunakan tombol panah keyboard untuk memilih opsi.</li>
+                            <li>Tekan Enter untuk menyimpan pengaturan waktu sistem.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto8.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto8.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Metode Partisi</div>
+                            <div class="gal-des">Penentuan cara pembagian ruang penyimpanan hard disk virtual.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pada menu Partition disks, sorot opsi Manua</li>
+                            <li>Tekan Enter untuk mengatur partisi secara mandiri/manual</li>
+                            <li>Pilih ruang kosong (free space) yang tersedia pada hard disk virtual.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto9.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto9.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Partisi Ruang Kosong</div>
+                            <div class="gal-des">Pembagian partisi otomatis pada area penyimpanan yang belum terpakai.
+                            </div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pilih opsi Automatically partition the free space.</li>
+                            <li>Tekan Enter agar installer membagi ruang secara otomatis (Root, Swap, dll.).</li>
+                            <li>Konfirmasi dan tulis perubahan partisi ke dalam disk (Write changes to disk).</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto10.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto10.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Konfirmasi Partisi</div>
+                            <div class="gal-des">Memastikan struktur partisi disk telah selesai dan siap diterapkan.
+                            </div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pastikan konfigurasi partisi otomatis pada free space sudah terpilih dengan benar.</li>
+                            <li>Lanjutkan proses ke tahap penulisan data ke dalam sistem penyimpanan virtual.</li>
+                            <li>Tekan Enter untuk menyimpan dan melanjutkan instalasi sistem dasar.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto11.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto11.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Menu Utama Installer</div>
+                            <div class="gal-des">Memilih penanganan boot loader saat sistem utama selesai dipasang..
+                            </div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pada menu Debian installer main menu, sorot opsi Install the GRUB boot loader.</li>
+                            <li>Opsi ini digunakan agar Debian dapat melakukan booting secara otomatis.</li>
+                            <li>Tekan Enter untuk melanjutkan proses pemasangan boot loader.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto12.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto12.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Lokasi Boot Loader</div>
+                            <div class="gal-des">Memilih media penyimpanan hard disk target instalasi GRUB.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Pada halaman Install the GRUB boot loader, pilih hard disk utama (/dev/sda).</li>
+                            <li>Hindari memilih opsi Enter device manually agar tidak gagal boot</li>
+                            <li>Tekan Enter dan tunggu hingga instalasi selesai penuh (Finish the installation).</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto16.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto16.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Login dan Akses File</div>
+                            <div class="gal-des">Masuk ke dalam sistem Debian via CLI dan mengatur izin direktori.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Ketik nama user smkfasent dan password untuk login ke Debian tty1.</li>
+                            <li>Jalankan perintah mkdir -p tugas_asj/latihan/isi untuk membuat folder bercabang.</li>
+                            <li>Gunakan perintah chmod 750 tugas_asj untuk mengubah hak akses folder.</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto17.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto17.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Akses Root dan Tambah User</div>
+                            <div class="gal-des">Masuk sebagai administrator (root) dan menambahkan pengguna baru.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Ketik perintah su - lalu masukkan password root untuk masuk sebagai superuser.</li>
+                            <li>Jalankan perintah adduser axioo untuk menambahkan akun pengguna baru.</li>
+                            <li>Masukkan password dan data untuk user axioo, lalu ketik exit untuk keluar dari root..
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto18.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto18.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Uji Coba Pengguna Baru</div>
+                            <div class="gal-des">Menguji hak akses folder menggunakan akun pengguna baru.</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Login atau pindah ke user axioo, lalu periksa lokasi folder aktif dengan pwd..</li>
+                            <li>Masuk ke folder /home dan jalankan ls -l untuk melihat daftar direktori.</li>
+                            <li>Coba akses direktori smkfasent/tugas_asj (akan muncul Permission denied sesuai aturan
+                                chmod).</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto14.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto14.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Manajemen Folder</div>
+                            <div class="gal-des">Membuat folder tugas bercabang serta memeriksa isi direktori..</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Jalankan perintah mkdir -p tugas_asj/tugas1/isitugas untuk membuat struktur direktori
+                                bertingkat.</li>
+                            <li>Gunakan perintah ls -la untuk melihat seluruh berkas termasuk berkas tersembunyi (hidden
+                                files).</li>
+                            <li>Gunakan perintah cd tugas_asj/tugas1 untuk berpindah ke dalam sub-folder. .</li>
+                        </ul>
+                    </div>
+                    <div class="gal-item"
+                        style="background-image: url('foto15.jpeg'), linear-gradient(135deg, #E3C979, #FFFBEA);"
+                        data-img="foto15.jpeg">
+                        <div class="gal-content">
+                            <div class="gal-name">Eksplorasi Terminall</div>
+                            <div class="gal-des">Masuk ke direktori kerja dan menyiapkan file teks praktek..</div>
+                            <button type="button" class="gal-btn">Perbesar Foto</button>
+                        </div>
+                        <ul class="gal-notes" hidden>
+                            <li>Masuk ke folder target menggunakan perintah cd isitugas..</li>
+                            <li>Jalankan perintah touch praktek1.txt untuk membuat file kosong baru..</li>
+                            <li>Ketik nano praktek1 untuk mulai menulis isi teks menggunakan editor Nano..</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="gal-buttons">
+                    <button id="gal-prev" aria-label="Foto sebelumnya">&#8592;</button>
+                    <button id="gal-next" aria-label="Foto berikutnya">&#8594;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ CARA INSTALL ============ -->
+        <section id="install" class="section wrap">
+            <p class="eyebrow reveal">Materi 2</p>
+            <h2 class="h2 reveal">Cara Install VirtualBox &amp; Debian</h2>
+
+            <div class="steps">
+                <article class="panel step reveal">
+                    <div class="step-no">1</div>
+                    <h3>Instalasi VirtualBox pada Komputer Host</h3>
+                    <ul>
+                        <li>Unduh installer VirtualBox resmi dari situs <b>virtualbox.org</b>.</li>
+                        <li>Jalankan file setup installer (<code>.exe</code> di Windows / <code>.dmg</code> di Mac).
+                        </li>
+                        <li>Ikuti wizard dengan menekan <b>Next</b> sampai proses penyalinan komponen selesai, lalu klik
+                            <b>Finish</b>.
+                        </li>
+                    </ul>
+                </article>
+                <article class="panel step reveal">
+                    <div class="step-no">2</div>
+                    <h3>Persiapan ISO Debian</h3>
+                    <ul>
+                        <li>Unduh file citra sistem Debian berformat <code>.iso</code> resmi dari <b>debian.org</b>
+                            (pilih edisi <b>DVD</b> / <b>NetInst</b>).</li>
+                    </ul>
+                </article>
+                <article class="panel step reveal">
+                    <div class="step-no">3</div>
+                    <h3>Membuat Mesin Virtual (VM) Baru</h3>
+                    <ul>
+                        <li>Buka VirtualBox, lalu klik tombol <b>New</b>.</li>
+                        <li>Isi nama mesin (contoh: <b>Debian-ASJ</b>), pilih lokasi penyimpanan, dan masukkan file ISO
+                            Debian.</li>
+                        <li>Alokasikan <b>RAM</b> (minimal 1024 MB / 2048 MB) dan jumlah core CPU (minimal 1 vCPU).</li>
+                        <li>Buat media penyimpanan <b>Virtual Hard Disk (VDI)</b> minimal 10 GB &ndash; 20 GB, lalu klik
+                            <b>Finish</b>.
+                        </li>
+                    </ul>
+                </article>
+                <article class="panel step reveal">
+                    <div class="step-no">4</div>
+                    <h3>Instalasi OS Debian pada Mesin Virtual</h3>
+                    <ul>
+                        <li>Pilih mesin virtual yang telah dibuat, lalu klik <b>Start</b>.</li>
+                        <li>Pada menu boot pembuka, pilih <b>Graphical Install</b> atau <b>Install</b>.</li>
+                        <li>Pilih bahasa, negara, dan tata letak keyboard.</li>
+                        <li>Isi hostname, domain, serta password untuk akun root dan akun user biasa.</li>
+                        <li>Pada alur partisi disk, pilih <b>Guided - use entire disk</b> agar partisi dibagi otomatis.
+                        </li>
+                        <li>Tunggu pemasangan paket sistem dasar, lalu pilih perangkat lunak tambahan (<b>Desktop
+                                Environment</b> atau <b>Standard System Utilities</b>).</li>
+                        <li>Pasang <b>GRUB bootloader</b> pada hard disk utama (<code>/dev/sda</code>).</li>
+                        <li>Klik <b>Continue</b> saat instalasi selesai untuk reboot pertama kali ke Debian.</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- ============ FUNGSI PERINTAH ============ -->
+        <section id="perintah" class="section wrap">
+            <p class="eyebrow reveal">Materi 3</p>
+            <h2 class="h2 reveal">Fungsi Perintah Terminal</h2>
+            <p class="sub reveal">Materi Praktikum ASJ penjelasan rinci setiap baris perintah terminal Linux
+                yang digunakan dalam praktikum pembuatan dan pengelolaan direktori serta file.</p>
+
+            <div class="cmd-grid">
+                <h3 class="cmd-group reveal">1. Hak Akses Administrator</h3>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">su</code>
+                    <span class="cmd-full">Switch User</span>
+                    <p><b>Fungsi:</b> Memindahkan sesi pengguna aktif ke akun superuser/administrator (root) agar bisa
+                        menjalankan perintah tingkat sistem dengan wewenang penuh tanpa terhalang pembatasan izin
+                        (permission).</p>
+                </article>
+                <h3 class="cmd-group reveal">2. Pembuatan &amp; Penghapusan Direktori</h3>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">mkdir nama_folder</code>
+                    <span class="cmd-full">Make Directory</span>
+                    <p><b>Fungsi:</b> Membuat satu direktori/folder baru di lokasi direktori aktif.</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">mkdir -p path/folder/sub_folder</code>
+                    <span class="cmd-full">Make Directory - Parents</span>
+                    <p><b>Fungsi:</b> Membuat rantai direktori bertingkat otomatis dalam satu baris. Opsi
+                        <code>-p</code> membuat folder induk yang belum ada tanpa error.
+                    </p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">rmdir nama_folder</code>
+                    <span class="cmd-full">Remove Directory</span>
+                    <p><b>Fungsi:</b> Menghapus direktori yang kondisinya sepenuhnya kosong (tanpa file atau
+                        sub-folder).</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">rm -rf nama_folder</code>
+                    <span class="cmd-full">Remove Recursive Force</span>
+                    <p><b>Fungsi:</b> Menghapus direktori beserta seluruh isi file dan sub-folder di dalamnya secara
+                        permanen dan paksa.</p>
+                </article>
+                <h3 class="cmd-group reveal">3. Navigasi &amp; Orientasi Direktori</h3>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">pwd</code>
+                    <span class="cmd-full">Print Working Directory</span>
+                    <p><b>Fungsi:</b> Menampilkan path lengkap lokasi direktori yang sedang dibuka terminal.</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">cd nama_folder</code>
+                    <span class="cmd-full">Change Directory</span>
+                    <p><b>Fungsi:</b> Memindahkan sesi terminal masuk ke direktori target.</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">cd ..</code>
+                    <span class="cmd-full">Naik satu tingkat</span>
+                    <p><b>Fungsi:</b> Memindahkan posisi terminal keluar menuju direktori induk (parent directory).</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">ls</code>
+                    <span class="cmd-full">List</span>
+                    <p><b>Fungsi:</b> Menampilkan daftar file dan folder di dalam direktori aktif.</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">ls -R</code>
+                    <span class="cmd-full">List Recursive</span>
+                    <p><b>Fungsi:</b> Menampilkan struktur isi direktori beserta seluruh sub-folder secara terperinci
+                        dan bertingkat.</p>
+                </article>
+                <h3 class="cmd-group reveal">4. Pembuatan &amp; Pengeditan File</h3>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">touch path/ke/file.txt</code>
+                    <span class="cmd-full">Buat file kosong</span>
+                    <p><b>Fungsi:</b> Membuat file baru kosong (0 byte) pada path yang ditentukan, atau memperbarui
+                        timestamp jika file sudah ada.</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <code class="cmd-code">nano path/ke/file.txt</code>
+                    <span class="cmd-full">Teks editor Nano</span>
+                    <p><b>Fungsi:</b> Membuka editor Nano di terminal untuk membuat, membaca, atau mengedit isi teks
+                        file target.</p>
+                </article>
+                <h3 class="cmd-group reveal">5. Pintasan Keyboard &amp; Navigasi Nano</h3>
+                <article class="panel cmd reveal">
+                    <span class="cmd-keys"><kbd>Ctrl</kbd> + <kbd>X</kbd></span>
+                    <span class="cmd-full">Exit</span>
+                    <p><b>Fungsi:</b> Keluar dari program teks editor Nano.</p>
+                </article>
+                <article class="panel cmd reveal">
+                    <span class="cmd-keys"><kbd>Y</kbd></span>
+                    <span class="cmd-full">Yes</span>
+                    <p><b>Fungsi:</b> Mengonfirmasi bahwa perubahan teks di Nano ingin disimpan (Save modified buffer).
+                    </p>
+                </article>
+                <article class="panel cmd reveal">
+                    <span class="cmd-keys"><kbd>N</kbd></span>
+                    <span class="cmd-full">No</span>
+                    <p><b>Fungsi:</b> Menolak penyimpanan perubahan dan keluar dari Nano tanpa mengubah isi file asli.
+                    </p>
+                </article>
+                <article class="panel cmd reveal">
+                    <span class="cmd-keys"><kbd>Enter</kbd></span>
+                    <span class="cmd-full">Tombol eksekusi</span>
+                    <p><b>Fungsi:</b> Mengonfirmasi nama file pada Nano, serta mengeksekusi baris perintah yang diketik
+                        di terminal Linux.</p>
+                </article>
+            </div>
+
+            <!-- Contoh alur -->
+            <div class="terminal reveal">
+                <div class="term-bar"><i></i><i></i><i></i><span>Contoh alur di terminal Debian</span></div>
+                <pre><code><span class="c"># masuk sebagai root</span>
+<span class="p">$</span> su
+<span class="c"># buat folder bertingkat sekaligus</span>
+<span class="p">#</span> mkdir -p /home/asj/praktikum/data
+<span class="c"># pindah ke folder tujuan</span>
+<span class="p">#</span> cd /home/asj/praktikum/data
+<span class="c"># buat file kosong, lalu isi dengan nano</span>
+<span class="p">#</span> touch catatan.txt
+<span class="p">#</span> nano catatan.txt
+<span class="c"># simpan: Ctrl + X, lalu Y, lalu Enter</span></code></pre>
+            </div>
+        </section>
+
+        <!-- ============ HAK AKSES FILE & DIREKTORI (PERMISSIONS) ============ -->
+        <section id="hak-akses" class="section wrap pm">
+            <p class="eyebrow reveal">Materi 4</p>
+            <h2 class="h2 reveal">Hak Akses File &amp; Direktori di Debian</h2>
+            <p class="sub reveal">Bagaimana cara dan konsep pembuatan/pengaturan hak akses (permissions) pada file dan
+                direktori di Debian, mulai dari konsep dasar sampai perintah <code>chmod</code> dan <code>chown</code>.
+            </p>
+
+            <h3 class="pm-h reveal">Konsep Dasar Hak Akses di Linux Debian</h3>
+            <p class="sub reveal" style="margin-top:0">Setiap file dan folder di Debian memiliki sistem keamanan yang
+                dibagi menjadi <b>3 kategori pengguna</b> dan <b>3 jenis hak akses</b>.</p>
+            <div class="pm-two">
+                <div class="panel pm-box reveal">
+                    <h4>1. Kategori Pengguna (Users)</h4>
+                    <div class="pm-row"><b class="pm-badge">u</b>
+                        <div><strong>User / Owner</strong><span>Pemilik asli yang membuat file/folder tersebut.</span>
+                        </div>
+                    </div>
+                    <div class="pm-row"><b class="pm-badge">g</b>
+                        <div><strong>Group</strong><span>Sekumpulan user yang berada dalam satu kelompok/grup yang
+                                sama.</span></div>
+                    </div>
+                    <div class="pm-row"><b class="pm-badge">o</b>
+                        <div><strong>Others</strong><span>Pengguna umum / publik di luar pemilik dan grup.</span></div>
+                    </div>
+                </div>
+                <div class="panel pm-box reveal">
+                    <h4>2. Jenis Hak Akses (Permissions)</h4>
+                    <div class="pm-row"><b class="pm-badge">r</b>
+                        <div><strong>Read</strong><span>Membaca isi file atau melihat daftar isi folder.</span></div>
+                        <span class="pm-val">= 4</span>
+                    </div>
+                    <div class="pm-row"><b class="pm-badge">w</b>
+                        <div><strong>Write</strong><span>Menulis, mengubah, menambah, atau menghapus isi
+                                file/folder.</span></div><span class="pm-val">= 2</span>
+                    </div>
+                    <div class="pm-row"><b class="pm-badge">x</b>
+                        <div><strong>Execute</strong><span>Mengeksekusi file program atau membuka/masuk ke dalam
+                                direktori (folder).</span></div><span class="pm-val">= 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="pm-h reveal">Cara Membuat / Mengatur Hak Akses dengan <code>chmod</code></h3>
+            <p class="sub reveal" style="margin-top:0">Perintah <code>chmod</code> (<i>Change Mode</i>) digunakan untuk
+                mengubah hak akses suatu file atau direktori. Coba kalkulator di bawah, centang kotaknya dan lihat angka
+                serta perintahnya berubah.</p>
+            <div class="panel pm-calc reveal" id="pm-calc">
+                <div>
+                    <div class="pm-table">
+                        <span></span><span class="pm-th">r &middot; 4</span><span class="pm-th">w &middot; 2</span><span
+                            class="pm-th">x &middot; 1</span>
+                        <span class="pm-rl">User (u)</span><label class="pm-ck"><input type="checkbox"
+                                aria-label="User r"><i data-l="r"></i></label><label class="pm-ck"><input
+                                type="checkbox" aria-label="User w"><i data-l="w"></i></label><label
+                            class="pm-ck"><input type="checkbox" aria-label="User x"><i data-l="x"></i></label>
+                        <span class="pm-rl">Group (g)</span><label class="pm-ck"><input type="checkbox"
+                                aria-label="Group r"><i data-l="r"></i></label><label class="pm-ck"><input
+                                type="checkbox" aria-label="Group w"><i data-l="w"></i></label><label
+                            class="pm-ck"><input type="checkbox" aria-label="Group x"><i data-l="x"></i></label>
+                        <span class="pm-rl">Others (o)</span><label class="pm-ck"><input type="checkbox"
+                                aria-label="Others r"><i data-l="r"></i></label><label class="pm-ck"><input
+                                type="checkbox" aria-label="Others w"><i data-l="w"></i></label><label
+                            class="pm-ck"><input type="checkbox" aria-label="Others x"><i data-l="x"></i></label>
+                    </div>
+                    <div class="pm-pres"><span>Contoh cepat:</span><button type="button"
+                            data-p="755">755</button><button type="button" data-p="644">644</button><button
+                            type="button" data-p="777">777</button><button type="button" data-p="600">600</button></div>
+                </div>
+                <div class="pm-out">
+                    <div class="pm-num" id="pm-num">755</div>
+                    <div class="pm-sym" id="pm-sym">rwxr-xr-x</div>
+                    <code class="pm-cmd" id="pm-cmd" title="Klik untuk menyalin">chmod 755 nama_file</code>
+                </div>
+            </div>
+
+            <h3 class="pm-h reveal">Metode 1: Menggunakan Angka (Numeric / Oktal)</h3>
+            <p class="sub reveal" style="margin-top:0">Jumlahkan nilai <b>r (4)</b>, <b>w (2)</b>, dan <b>x (1)</b>
+                untuk masing-masing kategori (User - Group - Others).</p>
+            <div class="pm-form reveal">
+                <span>Rumus</span><code>chmod [angka_user][angka_group][angka_others] nama_file_atau_folder</code></div>
+            <div class="pm-grid">
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod 755 tugas_asj</code><span
+                        class="cmd-full">Folder umum</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>User</b><span class="pm-pl"><i class="on">r</i><i class="on">w</i><i
+                                    class="on">x</i></span><em>7 = 4+2+1</em></div>
+                        <div class="pm-rw"><b>Group</b><span class="pm-pl"><i class="on">r</i><i class="">w</i><i
+                                    class="on">x</i></span><em>5 = 4+0+1</em></div>
+                        <div class="pm-rw"><b>Others</b><span class="pm-pl"><i class="on">r</i><i class="">w</i><i
+                                    class="on">x</i></span><em>5 = 4+0+1</em></div>
+                    </div>
+                    <p><b>Fungsi:</b> Mengatur hak akses folder <code>tugas_asj</code>: User mendapat nilai 7 (Baca,
+                        Tulis, Masuk), Group nilai 5 (Baca &amp; Masuk), dan Others nilai 5 (Baca &amp; Masuk). Biasanya
+                        digunakan untuk folder/direktori umum.</p>
+                </article>
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod 644 catatan.txt</code><span
+                        class="cmd-full">File teks / dokumen</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>User</b><span class="pm-pl"><i class="on">r</i><i class="on">w</i><i
+                                    class="">x</i></span><em>6 = 4+2</em></div>
+                        <div class="pm-rw"><b>Group</b><span class="pm-pl"><i class="on">r</i><i class="">w</i><i
+                                    class="">x</i></span><em>4</em></div>
+                        <div class="pm-rw"><b>Others</b><span class="pm-pl"><i class="on">r</i><i class="">w</i><i
+                                    class="">x</i></span><em>4</em></div>
+                    </div>
+                    <p><b>Fungsi:</b> Mengatur hak akses file <code>catatan.txt</code>: User mendapat nilai 6 (Baca
+                        &amp; Tulis), sedangkan Group dan Others mendapat nilai 4 (hanya bisa Baca). Biasanya digunakan
+                        untuk file teks/dokumen.</p>
+                </article>
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod 777 tugas_asj</code><span
+                        class="cmd-full">Akses penuh untuk semua</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>User</b><span class="pm-pl"><i class="on">r</i><i class="on">w</i><i
+                                    class="on">x</i></span><em>7</em></div>
+                        <div class="pm-rw"><b>Group</b><span class="pm-pl"><i class="on">r</i><i class="on">w</i><i
+                                    class="on">x</i></span><em>7</em></div>
+                        <div class="pm-rw"><b>Others</b><span class="pm-pl"><i class="on">r</i><i class="on">w</i><i
+                                    class="on">x</i></span><em>7</em></div>
+                    </div>
+                    <p><b>Fungsi:</b> Memberikan akses penuh (Baca, Tulis, Masuk) kepada siapa saja tanpa batasan (User,
+                        Group, Others semuanya bernilai 7).</p>
+                </article>
+            </div>
+
+            <h3 class="pm-h reveal">Metode 2: Menggunakan Simbol (Symbolic Mode)</h3>
+            <p class="sub reveal" style="margin-top:0">Tambahkan (<b>+</b>) atau kurangi (<b>&minus;</b>) hak akses
+                secara spesifik tanpa harus menghitung angka.</p>
+            <div class="pm-form reveal">
+                <span>Rumus</span><code>chmod [kategori][operator][izin] nama_file_atau_folder</code></div>
+            <div class="pm-grid">
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod u+x skrip.sh</code><span
+                        class="cmd-full">Tambah hak execute</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>u</b><span class="pm-op add">+ x</span><em>pemilik</em></div>
+                    </div>
+                    <p><b>Fungsi:</b> Menambahkan (+) hak execute (x) khusus untuk pemilik (user / u) pada file
+                        <code>skrip.sh</code> agar bisa dijalankan sebagai program.</p>
+                </article>
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod o-rw dokumen.txt</code><span
+                        class="cmd-full">Cabut hak baca &amp; tulis</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>o</b><span class="pm-op del">&minus; r w</span><em>pengguna lain</em>
+                        </div>
+                    </div>
+                    <p><b>Fungsi:</b> Mencabut (-) hak baca dan tulis (r dan w) dari pengguna lain (others / o) pada
+                        file <code>dokumen.txt</code> demi keamanan.</p>
+                </article>
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod a+r catatan.txt</code><span
+                        class="cmd-full">Beri hak baca ke semua</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>a</b><span class="pm-op add">+ r</span><em>semua orang</em></div>
+                    </div>
+                    <p><b>Fungsi:</b> Memberikan (+) hak baca (r) kepada semua orang (all / a) pada file
+                        <code>catatan.txt</code>.</p>
+                </article>
+            </div>
+
+            <h3 class="pm-h reveal">Pengaturan Menyeluruh (Rekursif) &amp; Kepemilikan</h3>
+            <p class="sub reveal" style="margin-top:0">Ketika membuat folder bercabang yang berisi banyak file di
+                dalamnya, diperlukan perintah tambahan agar hak akses berubah secara serentak.</p>
+            <div class="pm-grid two">
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chmod -R 755 tugas_asj</code><span
+                        class="cmd-full">Recursive</span>
+                    <div class="pm-rws">
+                        <div class="pm-tree"><span>tugas_asj/</span><span>&boxur;
+                                sub_folder/</span><span>&nbsp;&nbsp;&nbsp;&boxur; file.txt</span></div>
+                    </div>
+                    <p><b>Fungsi:</b> Mengubah hak akses folder <code>tugas_asj</code> beserta seluruh isi sub-folder
+                        dan file di dalamnya secara otomatis sekaligus, tanpa harus mengubahnya satu per satu.</p>
+                </article>
+                <article class="panel cmd reveal pm-ex"><code class="cmd-code">chown -R root:root tugas_asj</code><span
+                        class="cmd-full">Change Owner</span>
+                    <div class="pm-rws">
+                        <div class="pm-rw"><b>owner</b><span class="pm-op add">root</span><b>group</b><span
+                                class="pm-op add">root</span></div>
+                    </div>
+                    <p><b>Fungsi:</b> Mengubah kepemilikan (owner dan group) dari folder <code>tugas_asj</code> dan
+                        seluruh isinya agar dikuasai sepenuhnya oleh user bernama <code>root</code> (atau bisa diganti
+                        dengan nama user Anda). Berguna untuk menghindari masalah <i>Permission Denied</i> saat user
+                        biasa ingin memodifikasi file sistem.</p>
+                </article>
+            </div>
+        </section>
+
+
+        <!-- ============ KESIMPULAN ============ -->
+        <section id="kesimpulan" class="section wrap narrow">
+            <p class="eyebrow reveal">Penutup</p>
+            <h2 class="h2 reveal">Kesimpulan</h2>
+            <div class="panel pad-lg reveal">
+                <p class="big-text">Penggunaan VirtualBox menyediakan lingkungan simulasi yang aman bagi calon Network
+                    Administrator untuk mempelajari dan mengonfigurasi sistem operasi Linux Debian tanpa risiko merusak
+                    sistem operasi utama pada komputer fisik.</p>
+                <p class="big-text" style="margin-top:16px">Penguasaan perintah dasar terminal seperti navigasi
+                    (<code>cd</code>, <code>pwd</code>), manajemen direktori (<code>mkdir -p</code>,
+                    <code>rmdir</code>), serta pengelolaan file (<code>touch</code>, <code>nano</code>) adalah fondasi
+                    utama mata pelajaran Administrasi Sistem Jaringan (ASJ). Struktur perintah ini memungkinkan
+                    administrator membangun, mengatur hak akses, dan mengorganisasi direktori kerja sistem secara
+                    terstruktur dan efisien.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sayap berjatuhan: diisi otomatis oleh script.js (bagian 4e). Sengaja ditaruh setelah <main> supaya tampil di atas video hero tapi di bawah teks. -->
+    <div class="wings-fx" id="wings-fx" aria-hidden="true"></div>
+
+    <footer class="footer">
+        <div class="wrap footer-inner">
+            <span class="brand"><i class="fa-solid fa-server"></i> PRAKTIKUM ASJ</span>
+            <span>VirtualBox &amp; Debian Kelompok asj</span>
+        </div>
+    </footer>
+
+
+    <!-- Lightbox galeri:-->
+    <div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lb-title" hidden>
+        <div class="lb-backdrop" id="lb-backdrop"></div>
+        <div class="lb-card">
+            <figure class="lb-media">
+                <img id="lb-img" alt="">
+                <span class="lb-miss" id="lb-miss"></span>
+            </figure>
+            <aside class="lb-side" data-lenis-prevent>
+                <span class="lb-count" id="lb-count"></span>
+                <h3 class="lb-title" id="lb-title"></h3>
+                <p class="lb-des" id="lb-des"></p>
+                <ul class="lb-notes" id="lb-notes"></ul>
+                <div class="lb-foot">
+                    <a class="lb-link" id="lb-link" href="#install">Lihat Tutorial</a>
+                    <div class="lb-nav">
+                        <button type="button" id="lb-prev" aria-label="Foto sebelumnya">&#8592;</button>
+                        <button type="button" id="lb-next" aria-label="Foto berikutnya">&#8594;</button>
+                    </div>
+                </div>
+            </aside>
+            <button type="button" class="lb-close" id="lb-close" aria-label="Tutup foto">&times;</button>
+        </div>
+    </div>
+
+    <!-- Model 3D format JSON (Three.js ObjectLoader).-->
+    <script type="application/json"
+        id="bg-model-json">{"metadata":{"version":4.5,"type":"Object","generator":"Object3D.toJSON"},"geometries":[{"uuid":"g-edges","type":"BufferGeometry","data":{"attributes":{"position":{"itemSize":3,"type":"Float32Array","array":[-1.6,-1.6,-1.6,-1.6,-1.6,1.6,-1.6,-1.6,-1.6,-1.6,1.6,-1.6,-1.6,-1.6,-1.6,1.6,-1.6,-1.6,-1.6,-1.6,1.6,-1.6,1.6,1.6,-1.6,-1.6,1.6,1.6,-1.6,1.6,-1.6,1.6,-1.6,-1.6,1.6,1.6,-1.6,1.6,-1.6,1.6,1.6,-1.6,-1.6,1.6,1.6,1.6,1.6,1.6,1.6,-1.6,-1.6,1.6,-1.6,1.6,1.6,-1.6,-1.6,1.6,1.6,-1.6,1.6,-1.6,1.6,1.6,1.6,1.6,1.6,1.6,-1.6,1.6,1.6,1.6],"normalized":false}}}},{"uuid":"g-slab","type":"BoxGeometry","width":1.5,"height":0.38,"depth":1.5},{"uuid":"g-led","type":"BoxGeometry","width":0.14,"height":0.07,"depth":0.02},{"uuid":"g-node","type":"SphereGeometry","radius":0.09,"widthSegments":12,"heightSegments":8},{"uuid":"g-ring","type":"TorusGeometry","radius":2.5,"tube":0.015,"radialSegments":8,"tubularSegments":120}],"materials":[{"uuid":"m-edge","type":"LineBasicMaterial","color":10910720,"transparent":true,"opacity":0.8},{"uuid":"m-gold","type":"MeshStandardMaterial","color":13938487,"metalness":0.85,"roughness":0.32,"emissive":8018450},{"uuid":"m-led","type":"MeshBasicMaterial","color":13938487},{"uuid":"m-ring","type":"MeshBasicMaterial","color":10910720,"transparent":true,"opacity":0.5}],"object":{"uuid":"o-root","type":"Group","name":"VirtualBox-3D","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[{"uuid":"o-host","name":"Host-OS (kotak luar)","type":"LineSegments","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"geometry":"g-edges","material":"m-edge"},{"uuid":"o-slab0","name":"Guest-OS layer 1","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,-0.5,0,1],"geometry":"g-slab","material":"m-gold"},{"uuid":"o-led00","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-0.55,-0.5,0.76,1],"geometry":"g-led","material":"m-led"},{"uuid":"o-led01","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-0.3,-0.5,0.76,1],"geometry":"g-led","material":"m-led"},{"uuid":"o-slab1","name":"Guest-OS layer 2","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"geometry":"g-slab","material":"m-gold"},{"uuid":"o-led10","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-0.55,0,0.76,1],"geometry":"g-led","material":"m-led"},{"uuid":"o-led11","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-0.3,0,0.76,1],"geometry":"g-led","material":"m-led"},{"uuid":"o-slab2","name":"Guest-OS layer 3","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0.5,0,1],"geometry":"g-slab","material":"m-gold"},{"uuid":"o-led20","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-0.55,0.5,0.76,1],"geometry":"g-led","material":"m-led"},{"uuid":"o-led21","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-0.3,0.5,0.76,1],"geometry":"g-led","material":"m-led"},{"uuid":"o-node0","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-1.6,-1.6,-1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node1","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-1.6,-1.6,1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node2","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-1.6,1.6,-1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node3","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,-1.6,1.6,1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node4","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,1.6,-1.6,-1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node5","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,1.6,-1.6,1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node6","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,1.6,1.6,-1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-node7","type":"Mesh","matrix":[1,0,0,0,0,1,0,0,0,0,1,0,1.6,1.6,1.6,1],"geometry":"g-node","material":"m-led"},{"uuid":"o-ring1","type":"Mesh","matrix":[1,0,0,0,0,0.0,1.0,0,0,-1.0,0.0,0,0,0,0,1],"geometry":"g-ring","material":"m-ring"},{"uuid":"o-ring2","type":"Mesh","matrix":[0.0,0,-1.0,0,0,1,0,0,1.0,0,0.0,0,0,0,0,1],"geometry":"g-ring","material":"m-ring"}]}}</script>
+    <script src="script.js"></script>
+</body>
+
+</html>
